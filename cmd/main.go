@@ -11,6 +11,7 @@ func main() {
 	h := handler.New()
 
 	r.GET("/ping", h.HandlePing)
+	r.POST("/registration", h.HandleRegistration)
 
 	r.Run(":80")
 }
