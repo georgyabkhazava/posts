@@ -1,11 +1,22 @@
 package handler
 
-import "github.com/gin-gonic/gin"
+import (
+	"context"
+	"github.com/gin-gonic/gin"
+)
 
-type Handler struct{}
+type RegistrationService interface {
+	RegistrationUser(ctx context.Context, name string, password string) (int64, error)
+}
 
-func New() *Handler {
-	return &Handler{}
+type Handler struct {
+	service RegistrationService
+}
+
+func New(s RegistrationService) *Handler {
+	return &Handler{
+		service: s,
+	}
 }
 
 func (h *Handler) HandlePing(c *gin.Context) {

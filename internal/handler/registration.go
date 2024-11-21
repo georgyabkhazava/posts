@@ -1,7 +1,6 @@
 package handler
 
 import (
-	"fmt"
 	"github.com/gin-gonic/gin"
 	"unicode"
 )
@@ -40,10 +39,16 @@ func (h *Handler) HandleRegistration(c *gin.Context) {
 		return
 	}
 
-	// написать метод валидации, провалидировать и если что вернуть 400
+	id, err := h.service.RegistrationUser(c, request.Name, request.Password)
+	if err != nil {
+		println(err.Error())
+		c.JSON(500, gin.H{
+			"message": "Internal error",
+		})
+		return
+	}
 
-	fmt.Println(request.Name, request.Password)
 	c.JSON(200, gin.H{
-		"message": "success",
+		"id": id,
 	})
 }
