@@ -6,16 +6,16 @@ import (
 	"unicode"
 )
 
-type RegistrationRequest struct {
+type Login struct {
 	Name     string `json:"name"`
 	Password string `json:"password"`
 }
 
-func (r RegistrationRequest) isValidatePassword() bool {
-	if len(r.Password) < 8 {
+func (l Login) isValidatePassword() bool {
+	if len(l.Password) < 8 {
 		return false
 	}
-	for _, p := range r.Password {
+	for _, p := range l.Password {
 		if unicode.IsUpper(p) {
 			return true
 		}
@@ -23,8 +23,8 @@ func (r RegistrationRequest) isValidatePassword() bool {
 	return false
 }
 
-func (h *Handler) HandleRegistration(c *gin.Context) {
-	var request RegistrationRequest
+func (h *Handler) HandleLogin(c *gin.Context) {
+	var request Login
 	err := c.Bind(&request) // метод Bind достает данные из запроса и засовывает их в структуру
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
@@ -40,7 +40,7 @@ func (h *Handler) HandleRegistration(c *gin.Context) {
 		return
 	}
 
-	id, err := h.service.RegistrationUser(c, request.Name, request.Password)
+	id, err := h.service.LoginUser(c, request.Name, request.Password)
 	if err != nil {
 		println(err.Error())
 		c.JSON(500, gin.H{
