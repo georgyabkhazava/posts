@@ -7,7 +7,7 @@ import (
 
 type RegistrationService interface {
 	RegistrationUser(ctx context.Context, name string, password string) (int64, error)
-	LoginUser(ctx context.Context, name string, password string) (int64, error)
+	LoginUser(ctx context.Context, name string, password string) (string, error)
 }
 
 type Handler struct {

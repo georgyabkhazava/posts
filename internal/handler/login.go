@@ -40,7 +40,7 @@ func (h *Handler) HandleLogin(c *gin.Context) {
 		return
 	}
 
-	id, err := h.service.LoginUser(c, request.Name, request.Password)
+	token, err := h.service.LoginUser(c, request.Name, request.Password)
 	if err != nil {
 		println(err.Error())
 		c.JSON(500, gin.H{
@@ -50,6 +50,6 @@ func (h *Handler) HandleLogin(c *gin.Context) {
 	}
 
 	c.JSON(200, gin.H{
-		"id": id,
+		"token": token,
 	})
 }
