@@ -29,3 +29,9 @@ func GenerateAccessToken(userID int64) (tokenStr string, err error) {
 
 	return token.SignedString([]byte(key))
 }
+
+func DecodeToken(tokenStr string) (*AuthClaims, error) {
+	claims := &AuthClaims{}
+	jwt.
+	if err != nil {}
+}

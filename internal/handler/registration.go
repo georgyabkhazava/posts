@@ -11,6 +11,7 @@ type RegistrationRequest struct {
 	Password string `json:"password"`
 }
 
+// isValidatePassword метод валидации пароля, проверяет соответствует ли пароль заданным параметрам
 func (r RegistrationRequest) isValidatePassword() bool {
 	if len(r.Password) < 8 {
 		return false
@@ -23,6 +24,8 @@ func (r RegistrationRequest) isValidatePassword() bool {
 	return false
 }
 
+// HandleRegistration метод регистрации
+// ррр
 func (h *Handler) HandleRegistration(c *gin.Context) {
 	var request RegistrationRequest
 	err := c.Bind(&request) // метод Bind достает данные из запроса и засовывает их в структуру

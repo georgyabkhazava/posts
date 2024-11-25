@@ -4,8 +4,10 @@ import (
 	"database/sql"
 	"fmt"
 	"github.com/georgyabkhazava/posts/internal/handler"
-	"github.com/georgyabkhazava/posts/internal/service"
-	"github.com/georgyabkhazava/posts/internal/storage"
+	"github.com/georgyabkhazava/posts/internal/service/registration"
+	"github.com/georgyabkhazava/posts/internal/service/twit"
+	registrationDB "github.com/georgyabkhazava/posts/internal/storage/registration"
+	twitDB "github.com/georgyabkhazava/posts/internal/storage/twit"
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
 	"os"
@@ -35,14 +37,16 @@ func main() {
 	}
 	defer db.Close()
 
-	registrationStorage := storage.New(db)
+	registrationStorage := registrationDB.New(db)
+	twitStorage := twitDB.New(db)
 
-	registrationService := service.New(registrationStorage)
+	registrationService := registration.New(registrationStorage)
+	twitService := twit.New(twitStorage)
 
-	h := handler.New(registrationService)
+	h := handler.New(registrationService, twitService)
 
 	r.GET("/ping", h.HandlePing)
 	r.POST("/registration", h.HandleRegistration)
-
+	r.POST("/login", h.HandleLogin)
 	r.Run(":80")
 }

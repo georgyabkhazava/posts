@@ -1,0 +1,56 @@
+package handler
+
+import (
+	"github.com/gin-gonic/gin"
+	"net/http"
+	"unicode/utf8"
+)
+
+type CreateTwit struct {
+	Title string
+	Text  string
+}
+
+func (c CreateTwit) isValidateTwit() bool {
+	if c.Text == "" || c.Title == "" {
+		return false
+	}
+
+	if utf8.RuneCountInString(c.Text) > 1000 || utf8.RuneCountInString(c.Title) > 30 {
+		return false
+	}
+	return true
+}
+
+func (h *Handler) HandleTwit(c *gin.Context) {
+	var request CreateTwit
+	err := c.Bind(&request) // метод Bind достает данные из запроса и засовывает их в структуру
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"message": err.Error(),
+		})
+		return
+	}
+
+	if request.isValidateTwit() == false {
+		c.JSON(400, gin.H{
+			"message": "Not Validate",
+		})
+		return
+	}
+
+	var userId int64
+
+	id, err := h.twitservice.CreateTwit(c, request.Text, request.Title, userId)
+	if err != nil {
+		println(err.Error())
+		c.JSON(500, gin.H{
+			"message": "Internal error",
+		})
+		return
+	}
+
+	c.JSON(200, gin.H{
+		"id": id,
+	})
+}
