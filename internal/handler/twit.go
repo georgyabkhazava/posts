@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"github.com/georgyabkhazava/posts/internal/domain"
 	"github.com/gin-gonic/gin"
 	"net/http"
 	"unicode/utf8"
@@ -39,9 +40,13 @@ func (h *Handler) HandleTwit(c *gin.Context) {
 		return
 	}
 
-	var userId int64
+	claims, err := domain.GetClaims(c)
+	if err != nil {
+		println(err.Error())
+		return
+	}
 
-	id, err := h.twitservice.CreateTwit(c, request.Text, request.Title, userId)
+	id, err := h.twitservice.CreateTwit(c, request.Text, request.Title, claims.UserID)
 	if err != nil {
 		println(err.Error())
 		c.JSON(500, gin.H{

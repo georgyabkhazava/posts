@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"fmt"
 	"github.com/georgyabkhazava/posts/internal/handler"
+	"github.com/georgyabkhazava/posts/internal/middlewares"
 	"github.com/georgyabkhazava/posts/internal/service/registration"
 	"github.com/georgyabkhazava/posts/internal/service/twit"
 	registrationDB "github.com/georgyabkhazava/posts/internal/storage/registration"
@@ -44,9 +45,11 @@ func main() {
 	twitService := twit.New(twitStorage)
 
 	h := handler.New(registrationService, twitService)
+	middleware := middlewares.New()
 
 	r.GET("/ping", h.HandlePing)
 	r.POST("/registration", h.HandleRegistration)
 	r.POST("/login", h.HandleLogin)
+	r.POST("/twit/create", middleware.CheckToken, h.HandleTwit)
 	r.Run(":80")
 }

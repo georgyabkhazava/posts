@@ -1,13 +1,15 @@
 package domain
 
 import (
+	"github.com/gin-gonic/gin"
+	"github.com/pkg/errors"
 	"time"
 
 	"github.com/dgrijalva/jwt-go"
 )
 
 const (
-	key = "sagoooj24325j22sa0sd"
+	Key = "sagoooj24325j22sa0sd"
 )
 
 var (
@@ -27,11 +29,18 @@ func GenerateAccessToken(userID int64) (tokenStr string, err error) {
 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
 
-	return token.SignedString([]byte(key))
+	return token.SignedString([]byte(Key))
 }
 
-func DecodeToken(tokenStr string) (*AuthClaims, error) {
-	claims := &AuthClaims{}
-	jwt.
-	if err != nil {}
+func GetClaims(ctx *gin.Context) (AuthClaims, error) {
+	claims, exists := ctx.Get("claims")
+	if claims == nil {
+		return AuthClaims{}, errors.New("claims is nil")
+	}
+
+	if !exists {
+		return AuthClaims{}, errors.New("claims not exists")
+	}
+
+	return claims.(AuthClaims), nil
 }
