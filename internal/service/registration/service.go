@@ -8,8 +8,12 @@ import (
 )
 
 type RegistrationStorage interface {
-	SaveUser(ctx context.Context, name string, passwordHash string) (int64, error)
+	SaveUser(ctx context.Context, name string, passwordHash string, email string) (int64, error)
 	GetUserID(ctx context.Context, name string, passwordHash string) (int64, error)
+}
+
+type VerificationService interface {
+	SendVerificationCode(ctx context.Context, userID int64, email string) error
 }
 
 type Service struct {
@@ -22,9 +26,9 @@ func New(s RegistrationStorage) *Service {
 	}
 }
 
-func (s *Service) RegistrationUser(ctx context.Context, name string, password string) (int64, error) {
+func (s *Service) RegistrationUser(ctx context.Context, name string, password string, email string) (int64, error) {
 	hash := generateMD5(password)
-	id, err := s.storage.SaveUser(ctx, name, hash)
+	id, err := s.storage.SaveUser(ctx, name, hash, email)
 	if err != nil {
 		return 0, err
 	}

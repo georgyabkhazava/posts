@@ -3,12 +3,14 @@ package handler
 import (
 	"github.com/gin-gonic/gin"
 	"net/http"
+	"strings"
 	"unicode"
 )
 
 type RegistrationRequest struct {
 	Name     string `json:"name"`
 	Password string `json:"password"`
+	Email    string `json:"email"`
 }
 
 // isValidatePassword метод валидации пароля, проверяет соответствует ли пароль заданным параметрам
@@ -21,6 +23,18 @@ func (r RegistrationRequest) isValidatePassword() bool {
 			return true
 		}
 	}
+	return false
+}
+
+func (r RegistrationRequest) isValidateEmail() bool {
+	if len(r.Email) > 255 {
+		return false
+	}
+
+	if strings.Index(r.Email, "@") != -1 {
+		return true
+	}
+
 	return false
 }
 
@@ -43,7 +57,14 @@ func (h *Handler) HandleRegistration(c *gin.Context) {
 		return
 	}
 
-	id, err := h.service.RegistrationUser(c, request.Name, request.Password)
+	if request.isValidateEmail() == false {
+		c.JSON(400, gin.H{
+			"message": "Not Validate",
+		})
+		return
+	}
+
+	id, err := h.service.RegistrationUser(c, request.Name, request.Password, request.Email)
 	if err != nil {
 		println(err.Error())
 		c.JSON(500, gin.H{

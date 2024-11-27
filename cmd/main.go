@@ -50,6 +50,10 @@ func main() {
 	r.GET("/ping", h.HandlePing)
 	r.POST("/registration", h.HandleRegistration)
 	r.POST("/login", h.HandleLogin)
-	r.POST("/twit/create", middleware.CheckToken, h.HandleTwit)
+	r.POST("/twits/create", middleware.CheckToken, h.HandleTwit)
+	r.GET("/twits", middleware.CheckToken, h.HandleGetTwits)
+	r.GET("/twits/:id", middleware.CheckToken, h.HandleGetTwit)
+	r.POST("comments/create", middleware.CheckToken)
 	r.Run(":80")
+
 }

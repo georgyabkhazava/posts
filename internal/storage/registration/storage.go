@@ -15,11 +15,11 @@ func New(db *sql.DB) *Storage {
 	return &Storage{db: db}
 }
 
-func (s *Storage) SaveUser(ctx context.Context, name string, passwordHash string) (int64, error) {
-	query := `insert into users (name, password) values ($1, $2) returning id;`
+func (s *Storage) SaveUser(ctx context.Context, name string, passwordHash string, email string) (int64, error) {
+	query := `insert into users (name, password, email) values ($1, $2, $3) returning id;`
 
 	var id int64
-	if err := s.db.QueryRowContext(ctx, query, name, passwordHash).Scan(&id); err != nil {
+	if err := s.db.QueryRowContext(ctx, query, name, passwordHash, email).Scan(&id); err != nil {
 		return 0, errors.Wrap(err, "query context")
 	}
 

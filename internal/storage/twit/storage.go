@@ -3,6 +3,7 @@ package twit
 import (
 	"context"
 	"database/sql"
+	"github.com/georgyabkhazava/posts/internal/domain"
 	"github.com/pkg/errors"
 )
 
@@ -24,4 +25,9 @@ func (s *Storage) SaveTwit(ctx context.Context, title string, text string, userI
 	}
 
 	return id, nil
+}
+
+func (s *Storage) GetTwits(ctx context.Context, userId int64) ([]domain.Twit, error) {
+	//TODO implement me
+	panic("implement me")
 }
