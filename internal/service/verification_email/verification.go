@@ -59,9 +59,12 @@ func (s *ServiceEmail) SendVerificationCode(ctx context.Context, userID int64) e
 }
 
 func generateVerificationCode() string {
-	rand.New(rand.NewSource(time.Now().UTC().UnixNano()))
+	r := rand.New(rand.NewSource(time.Now().UTC().UnixNano()))
 	var number int
-	number = rand.Intn(10000)
+	number = r.Intn(10000)
 	result := strconv.Itoa(number)
+	for len(result) < 4 {
+		result = "0" + result
+	}
 	return result
 }

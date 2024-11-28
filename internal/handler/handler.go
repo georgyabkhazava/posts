@@ -22,6 +22,10 @@ type CommentService interface {
 	CreateComment(ctx context.Context, userId int64, text string, twitId int64) (int64, error)
 }
 
+type VerificationService interface {
+	VerificationCode(ctx context.Context, userID int64, code string)
+}
+
 type Handler struct {
 	service        RegistrationService
 	twitservice    TwitService

@@ -8,8 +8,8 @@ import (
 )
 
 type CreateComment struct {
-	Text   string
-	TwitId int64
+	Text   string `json:"text"`
+	TwitId int64  `json:"twit_id"`
 }
 
 func (c CreateComment) isValidateComment() bool {

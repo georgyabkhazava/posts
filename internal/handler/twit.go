@@ -51,7 +51,7 @@ func (h *Handler) HandleTwit(c *gin.Context) {
 		return
 	}
 
-	id, err := h.twitservice.CreateTwit(c, request.Text, request.Title, claims.UserID)
+	id, err := h.twitservice.CreateTwit(c, request.Title, request.Text, claims.UserID)
 	if err != nil {
 		println(err.Error())
 		c.JSON(500, gin.H{

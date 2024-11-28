@@ -45,13 +45,13 @@ func main() {
 	registrationStorage := registrationDB.New(db)
 	verificationStorage := verificationDB.New(db)
 	twitStorage := twitDB.New(db)
-	commetStorage := commentDB.New(db)
+	commentStorage := commentDB.New(db)
 
 	verificationService := verification_email.New(verificationStorage, registrationStorage)
 
 	registrationService := registration.New(registrationStorage, verificationService)
 	twitService := twit.New(twitStorage)
-	commentService := comment.New(twitStorage, commetStorage)
+	commentService := comment.New(twitStorage, commentStorage)
 
 	h := handler.New(registrationService, twitService, commentService)
 	middleware := middlewares.New()
@@ -60,9 +60,10 @@ func main() {
 	r.POST("/registration", h.HandleRegistration)
 	r.POST("/login", h.HandleLogin)
 	r.POST("/twits/create", middleware.CheckToken, h.HandleTwit)
+	r.POST("/twits/delete", middleware.CheckToken, h.HandleDeleteTwit)
 	r.GET("/twits", middleware.CheckToken, h.HandleGetTwits)
 	r.GET("/twits/:id", middleware.CheckToken, h.HandleGetTwit)
-	r.POST("comments/create", middleware.CheckToken)
+	r.POST("/comments/create", middleware.CheckToken, h.HandleComment)
 	r.Run(":80")
 
 }
