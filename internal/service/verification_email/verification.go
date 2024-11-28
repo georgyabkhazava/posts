@@ -24,6 +24,13 @@ type ServiceEmail struct {
 	registrationstorage RegistrationStorage
 }
 
+func New(v VerificationStorage, r RegistrationStorage) *ServiceEmail {
+	return &ServiceEmail{
+		verificationstorage: v,
+		registrationstorage: r,
+	}
+}
+
 // получаем мыло по юзерайди
 // генерируем код
 // сохранить в базу

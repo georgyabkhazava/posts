@@ -13,16 +13,18 @@ type RegistrationStorage interface {
 }
 
 type VerificationService interface {
-	SendVerificationCode(ctx context.Context, userID int64, email string) error
+	SendVerificationCode(ctx context.Context, userID int64) error
 }
 
 type Service struct {
-	storage RegistrationStorage
+	storage             RegistrationStorage
+	verificationService VerificationService
 }
 
-func New(s RegistrationStorage) *Service {
+func New(s RegistrationStorage, v VerificationService) *Service {
 	return &Service{
-		storage: s,
+		storage:             s,
+		verificationService: v,
 	}
 }
 
@@ -32,6 +34,12 @@ func (s *Service) RegistrationUser(ctx context.Context, name string, password st
 	if err != nil {
 		return 0, err
 	}
+
+	err = s.verificationService.SendVerificationCode(ctx, id)
+	if err != nil {
+		return 0, err
+	}
+
 	return id, nil
 }
 

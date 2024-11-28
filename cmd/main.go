@@ -5,10 +5,14 @@ import (
 	"fmt"
 	"github.com/georgyabkhazava/posts/internal/handler"
 	"github.com/georgyabkhazava/posts/internal/middlewares"
+	"github.com/georgyabkhazava/posts/internal/service/comment"
 	"github.com/georgyabkhazava/posts/internal/service/registration"
 	"github.com/georgyabkhazava/posts/internal/service/twit"
+	"github.com/georgyabkhazava/posts/internal/service/verification_email"
+	commentDB "github.com/georgyabkhazava/posts/internal/storage/comment"
 	registrationDB "github.com/georgyabkhazava/posts/internal/storage/registration"
 	twitDB "github.com/georgyabkhazava/posts/internal/storage/twit"
+	verificationDB "github.com/georgyabkhazava/posts/internal/storage/verification"
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
 	"os"
@@ -39,12 +43,17 @@ func main() {
 	defer db.Close()
 
 	registrationStorage := registrationDB.New(db)
+	verificationStorage := verificationDB.New(db)
 	twitStorage := twitDB.New(db)
+	commetStorage := commentDB.New(db)
 
-	registrationService := registration.New(registrationStorage)
+	verificationService := verification_email.New(verificationStorage, registrationStorage)
+
+	registrationService := registration.New(registrationStorage, verificationService)
 	twitService := twit.New(twitStorage)
+	commentService := comment.New(twitStorage, commetStorage)
 
-	h := handler.New(registrationService, twitService)
+	h := handler.New(registrationService, twitService, commentService)
 	middleware := middlewares.New()
 
 	r.GET("/ping", h.HandlePing)
