@@ -43,3 +43,13 @@ func (s *Storage) GetUserID(ctx context.Context, name string, passwordHash strin
 
 	return userID, nil
 }
+
+func (s *Storage) GetEmailByUserID(ctx context.Context, userID int64) (string, error) {
+	query := `select email from users where id = $1 limit 1;`
+	var email string
+	if err := s.db.QueryRowContext(ctx, query, userID).Scan(&email); err != nil {
+		return "", errors.Wrap(err, "query context")
+	}
+
+	return email, nil
+}
