@@ -1,15 +1,60 @@
 package verification_email
 
-import "context"
+import (
+	"context"
+	"fmt"
+	"math/rand"
+	"net/smtp"
+	"strconv"
+	"time"
+)
+
+const password = "kjtuhzjsgrkhqlcm"
 
 type VerificationStorage interface {
-	SaveCode(ctx context.Context, userID int64, email string, code string) (int64, error)
+	SaveCode(ctx context.Context, userID int64, code string) error
+}
+
+type RegistrationStorage interface {
+	GetEmailByUserID(ctx context.Context, userID int64) (string, error)
 }
 
 type ServiceEmail struct {
-	varificationstorage VerificationStorage
+	verificationstorage VerificationStorage
+	registrationstorage RegistrationStorage
 }
 
-func (v *ServiceEmail) SendVerificationCode(ctx context.Context, userID int64, email string) error {
+// получаем мыло по юзерайди
+// генерируем код
+// сохранить в базу
+// отправить на почту
 
+func (s *ServiceEmail) SendVerificationCode(ctx context.Context, userID int64) error {
+	email, err := s.registrationstorage.GetEmailByUserID(ctx, userID)
+	if err != nil {
+		return err
+	}
+	var code string
+	code = generateVerificationCode()
+
+	err = s.verificationstorage.SaveCode(ctx, userID, code)
+	if err != nil {
+		return err
+	}
+
+	auth := smtp.PlainAuth("Код подтверждения", "gikoskokos@yandex.ru", password, "smtp.yandex.ru")
+	err = smtp.SendMail("smtp.yandex.ru:25", auth, "gikoskokos@yandex.ru", []string{email}, []byte(fmt.Sprintf("Код подтверждения: %s", code)))
+	if err != nil {
+		return err
+	}
+	return nil
+
+}
+
+func generateVerificationCode() string {
+	rand.New(rand.NewSource(time.Now().UTC().UnixNano()))
+	var number int
+	number = rand.Intn(10000)
+	result := strconv.Itoa(number)
+	return result
 }
